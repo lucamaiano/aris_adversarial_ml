@@ -1,0 +1,6 @@
+# Folders
+data/*
+weights/*
+
+# Other
+.DS_Store
