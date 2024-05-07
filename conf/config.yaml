@@ -1,0 +1,15 @@
+# Required to make the "experiments" dir the default one for the output of the models
+hydra:
+  job:
+    chdir: true
+  run:
+    dir: ./logs/${train.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+# Default config for train and data
+defaults:
+  - _self_
+  - train: base_cnn
+  - dataset: mnist
+  - attack: fgsm
+
+project: 'aris'

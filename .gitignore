@@ -1,6 +1,10 @@
 # Folders
 data/*
-weights/*
+logs/
 
 # Other
+**/__pycache__/
 .DS_Store
+.github/
+.devcontainer/
+.vscode/
