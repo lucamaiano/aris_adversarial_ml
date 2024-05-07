@@ -1,0 +1,10 @@
+name: 'Base_CNN'
+
+# 'model'.pth filename
+model_path: "base_cnn.pth"
+load_pretrained: True
+
+# Training configs
+num_epochs: 3
+batch_size: 64
+learning_rate: 0.01
