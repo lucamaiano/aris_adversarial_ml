@@ -50,6 +50,7 @@ def train(model: torch.nn.Module,
         optimizer=optimizer,
         input_shape=input_shape,
         nb_classes=nb_classes,
+        device_type=device
     )
     
     # Train the ART classifier
@@ -80,17 +81,18 @@ def test(model: torch.nn.Module,
         optimizer=optimizer,
         input_shape=input_shape,
         nb_classes=nb_classes,
+        device_type="gpu" if device == "cuda" else "cpu"
     )
     
     return classifier
 
-def attack(attack_name, x, y, nb_classes, classifier, logger, targeted=False):
+def attack(attack_name, x, y, nb_classes, classifier, logger, batch_size=32, targeted=False):
     logger.info(f"Attacking the model with the {attack_name} attack")
     
     if targeted:
         y_target = random_targets(y, nb_classes)
-        attack = TargetedAttacks(attack_name=attack_name, classifier=classifier, x=x, y_target=y_target)
+        attack = TargetedAttacks(attack_name=attack_name, classifier=classifier, x=x, y_target=y_target, batch_size=batch_size)
     else:
-        attack = UntargetedAttacks(attack_name=attack_name, classifier=classifier, x=x)
+        attack = UntargetedAttacks(attack_name=attack_name, classifier=classifier, x=x, batch_size=batch_size)
         
     return attack

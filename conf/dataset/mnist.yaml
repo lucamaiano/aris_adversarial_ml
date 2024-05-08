@@ -1,4 +1,4 @@
 name: "MNIST"
 nb_classes: 10
 
-input_shape: (1, 28, 28)
+input_shape: [1, 28, 28]

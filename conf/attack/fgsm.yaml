@@ -1,2 +1,2 @@
 name: "FGSM"
-targeted: True
+targeted: True # Can be either True or False
