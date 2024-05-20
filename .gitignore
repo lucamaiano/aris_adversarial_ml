@@ -1,6 +1,7 @@
 # Folders
 data/
 logs/
+output/
 
 # Other
 **/__pycache__/

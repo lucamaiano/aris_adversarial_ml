@@ -3,12 +3,12 @@ hydra:
   job:
     chdir: true
   run:
-    dir: ./logs/${train.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: ./logs/${model.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
 
-# Default config for train and data
+# Default config for model and data
 defaults:
   - _self_
-  - train: base_cnn
+  - model: pretrained
   - dataset: mnist
   - attack: fgsm
 

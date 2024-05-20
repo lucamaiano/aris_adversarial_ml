@@ -28,37 +28,41 @@ def main(conf: DictConfig):
 
 def train(conf: DictConfig) -> None:
     # Setup hyperparameters
-    NUM_EPOCHS = conf.train.num_epochs
-    BATCH_SIZE = conf.train.batch_size
-    LEARNING_RATE = conf.train.learning_rate
+    NUM_EPOCHS = conf.model.num_epochs
+    BATCH_SIZE = conf.model.batch_size
+    LEARNING_RATE = conf.model.learning_rate
     INPUT_SHAPE = tuple(conf.dataset.input_shape)
     NB_CLASSES = conf.dataset.nb_classes
     MODEL_PATH = to_absolute_path(
-        Path("models", conf.train.name, f"{conf.train.model_path}.model")
+        Path("models", conf.model.name, conf.model.model_path)
     )
 
     # Load data
     (x_train, y_train), (x_test, y_test), min_pixel_value, max_pixel_value = (
         data_setup.load_data(conf.dataset.name)
     )
-
-    # Create the model
-    if conf.train.name.lower() == "base_cnn":
-        model = BaseCNN()
-    else:
-        raise NotImplementedError
     
     # Setup target device
     device = "cuda" if torch.cuda.is_available() else "cpu"
     log.info(f"Device: {device}")
-    model.to(device)
-
-    # Set loss and optimizer
-    loss_fn = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    
+    # Create the model
+    if conf.model.name.lower() == "base_cnn":
+        model = BaseCNN()
+    elif conf.model.name.lower() == "pretrained":
+        model = None
+    else:
+        raise NotImplementedError
 
     # Start training with the engine
-    if not conf.train.load_pretrained or not Path(MODEL_PATH).is_file():
+    if not conf.model.load_pretrained:
+        # Move to target device
+        model.to(device)
+
+        # Set loss and optimizer
+        loss_fn = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+        
         classifier = engine.train(
             model=model,
             x_train=x_train,
@@ -74,18 +78,8 @@ def train(conf: DictConfig) -> None:
         )
     else:
         classifier = engine.test(
-            model=model,
             model_path=MODEL_PATH,
-            x_train=x_train,
-            y_train=y_train,
-            nb_classes=NB_CLASSES,
-            clip_values=(min_pixel_value, max_pixel_value),
-            input_shape=INPUT_SHAPE,
-            batch_size=BATCH_SIZE,
-            loss_fn=loss_fn,
-            optimizer=optimizer,
-            epochs=NUM_EPOCHS,
-            device=device,
+            device=device
         )
 
     # Evaluate the original model
@@ -94,8 +88,8 @@ def train(conf: DictConfig) -> None:
     # Save the model with help from utils.py
     utils.save_model(
         model=classifier,
-        target_dir=to_absolute_path(Path("models", conf.train.name)),
-        model_name=conf.train.model_path,
+        target_dir=to_absolute_path(Path("models", conf.model.name)),
+        model_name=conf.model.model_path,
     )
 
     # Attack the model

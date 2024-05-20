@@ -58,31 +58,15 @@ def train(model: torch.nn.Module,
     
     return classifier
 
-def test(model: torch.nn.Module, 
+def test(
         model_path: str,
-        x_train: torch.utils.data.DataLoader, 
-        y_train: torch.utils.data.DataLoader, 
-        nb_classes,
-        clip_values,
-        input_shape,
-        batch_size,
-        optimizer: torch.optim.Optimizer,
-        loss_fn: torch.nn.Module,
-        epochs: int,
-        device: torch.device) -> Dict[str, List[float]]:
+        device: torch.device
+    ) -> Dict[str, List[float]]:
     # Load pretrained model
-    model.load_state_dict(torch.load(model_path))
+    classifier = torch.load(model_path)
     
-    # Create the ART classifier
-    classifier = PyTorchClassifier(
-        model=model,
-        clip_values=clip_values,
-        loss=loss_fn,
-        optimizer=optimizer,
-        input_shape=input_shape,
-        nb_classes=nb_classes,
-        device_type="gpu" if device == "cuda" else "cpu"
-    )
+    # Move to target device
+    # classifier.to(device)
     
     return classifier
 

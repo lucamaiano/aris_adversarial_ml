@@ -90,4 +90,4 @@ def save_model(model: torch.nn.Module,
 
   # Save the model state_dict()
   print(f"[INFO] Saving model to: {target_dir}")
-  model.save(filename=model_name, path=target_dir)
+  torch.save(model, Path(target_dir, model_name))

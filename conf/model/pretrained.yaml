@@ -1,0 +1,10 @@
+name: 'Pretrained'
+
+# 'model'.pth filename
+model_path: "pretrained.pth"
+load_pretrained: True
+
+# Training configs
+num_epochs: Null
+batch_size: 64
+learning_rate: Null
