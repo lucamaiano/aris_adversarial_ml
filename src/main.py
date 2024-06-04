@@ -13,6 +13,8 @@ import copy
 import data_setup, engine, utils
 from model.baseline import BaseCNN
 
+from torchvision import models
+
 
 # Logger
 log = logging.getLogger(__name__)
@@ -38,19 +40,26 @@ def train(conf: DictConfig) -> None:
     )
 
     # Load data
-    (x_train, y_train), (x_test, y_test), min_pixel_value, max_pixel_value = (
-        data_setup.load_data(conf.dataset.name)
+    train_dataset, test_dataset, min_pixel_value, max_pixel_value = (
+        data_setup.load_data(conf.dataset.name, batch_size=BATCH_SIZE)
     )
-    
+
     # Setup target device
     device = "cuda" if torch.cuda.is_available() else "cpu"
     log.info(f"Device: {device}")
+
     
+    use_art = False # Use art classifier
+
     # Create the model
     if conf.model.name.lower() == "base_cnn":
-        model = BaseCNN()
+        model = BaseCNN(input_shape=INPUT_SHAPE)
+        use_art = True
     elif conf.model.name.lower() == "pretrained":
         model = None
+        use_art = True
+    elif conf.model.name.lower() == "mobilenet":
+        model = models.mobilenet_v3_small(weights=models.mobilenet.MobileNet_V3_Small_Weights.DEFAULT)
     else:
         raise NotImplementedError
 
@@ -61,12 +70,16 @@ def train(conf: DictConfig) -> None:
 
         # Set loss and optimizer
         loss_fn = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-        
+        if conf.model.optimizer.lower() == "adam":
+            optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+        elif conf.model.optimizer.lower() == "sgd":
+            optimizer = torch.optim.SGD(
+                model.parameters(), lr=LEARNING_RATE, momentum=0.9
+            )
+
         classifier = engine.train(
             model=model,
-            x_train=x_train,
-            y_train=y_train,
+            train_dataset=train_dataset,
             nb_classes=NB_CLASSES,
             clip_values=(min_pixel_value, max_pixel_value),
             input_shape=INPUT_SHAPE,
@@ -75,21 +88,24 @@ def train(conf: DictConfig) -> None:
             optimizer=optimizer,
             epochs=NUM_EPOCHS,
             device=device,
+            use_art=use_art,
         )
     else:
-        classifier = engine.test(
-            model_path=MODEL_PATH,
-            device=device
-        )
+        classifier = engine.test(model_path=MODEL_PATH, device=device, use_art=use_art)
 
     # Evaluate the original model
-    predictions, accuracy = utils.evaluate_model(classifier, x_test, y_test, log)
+    x_test, y_test = test_dataset
+    predictions, accuracy = utils.evaluate_model(
+        classifier, x_test, y_test, use_art, log
+    )
 
     # Save the model with help from utils.py
     utils.save_model(
         model=classifier,
         target_dir=to_absolute_path(Path("models", conf.model.name)),
         model_name=conf.model.model_path,
+        use_art=use_art,
+        logger=log,
     )
 
     # Attack the model
@@ -107,7 +123,12 @@ def train(conf: DictConfig) -> None:
 
     # Evaluate the attacked model metrics
     predictions_adv, accuracy_adv = utils.evaluate_model(
-        classifier=classifier_adv, x=attack.x_adv, y=y_test, logger=log, attacked=True
+        classifier=classifier_adv,
+        x=attack.x_adv,
+        y=y_test,
+        logger=log,
+        use_art=use_art,
+        attacked=True,
     )
 
     # Evaluate the attacked model on robustness metrics

@@ -8,3 +8,4 @@ load_pretrained: True
 num_epochs: Null
 batch_size: 64
 learning_rate: Null
+optimizer: Null

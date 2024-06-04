@@ -8,7 +8,7 @@ hydra:
 # Default config for model and data
 defaults:
   - _self_
-  - model: pretrained
+  - model: base_cnn
   - dataset: mnist
   - attack: fgsm
 
