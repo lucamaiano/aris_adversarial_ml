@@ -36,7 +36,7 @@ def train(conf: DictConfig) -> None:
     INPUT_SHAPE = tuple(conf.dataset.input_shape)
     NB_CLASSES = conf.dataset.nb_classes
     MODEL_PATH = to_absolute_path(
-        Path("models", conf.model.name, conf.dataset.name, conf.model.model_path)
+        Path("models", conf.model.name, conf.model.model_path)
     )
 
     # Load data
@@ -60,6 +60,8 @@ def train(conf: DictConfig) -> None:
         use_art = True
     elif conf.model.name.lower() == "mobilenet":
         model = models.mobilenet_v3_small(weights=models.mobilenet.MobileNet_V3_Small_Weights.DEFAULT)
+    elif conf.model.name.lower() == "pretrained":
+        model = None
     else:
         raise NotImplementedError
 
@@ -102,7 +104,7 @@ def train(conf: DictConfig) -> None:
     # Save the model with help from utils.py
     utils.save_model(
         model=classifier,
-        target_dir=to_absolute_path(Path("models", conf.model.name, conf.dataset.name)),
+        target_dir=to_absolute_path(Path("models", conf.model.name)),
         model_name=conf.model.model_path,
         use_art=use_art,
         logger=log,

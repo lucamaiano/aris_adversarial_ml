@@ -114,7 +114,7 @@ def test(
         art.config.ART_DATA_PATH = Path(model_path).parent if isinstance(model_path, str) else model_path.parent
         
     # Load pretrained model
-    classifier = torch.load(model_path)
+    classifier = torch.load(model_path, map_location=torch.device(device))
 
     return classifier
 
