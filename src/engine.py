@@ -5,6 +5,8 @@ Contains functions for training and testing a PyTorch model.
 import torch
 import numpy as np
 
+from pathlib import Path
+
 from art.estimators.classification import PyTorchClassifier
 from art.utils import random_targets
 
@@ -107,6 +109,10 @@ def train(
 def test(
     model_path: str, device: torch.device, use_art: bool
 ) -> Dict[str, List[float]]:
+    if use_art:
+        import art
+        art.config.ART_DATA_PATH = Path(model_path).parent if isinstance(model_path, str) else model_path.parent
+        
     # Load pretrained model
     classifier = torch.load(model_path)
 

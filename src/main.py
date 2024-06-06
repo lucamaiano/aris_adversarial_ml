@@ -11,7 +11,7 @@ from pathlib import Path
 import torch
 import copy
 import data_setup, engine, utils
-from model.baseline import BaseCNN
+from model.baseline import BaseCNN_v1, BaseCNN_v2
 
 from torchvision import models
 
@@ -36,7 +36,7 @@ def train(conf: DictConfig) -> None:
     INPUT_SHAPE = tuple(conf.dataset.input_shape)
     NB_CLASSES = conf.dataset.nb_classes
     MODEL_PATH = to_absolute_path(
-        Path("models", conf.model.name, conf.model.model_path)
+        Path("models", conf.model.name, conf.dataset.name, conf.model.model_path)
     )
 
     # Load data
@@ -52,11 +52,11 @@ def train(conf: DictConfig) -> None:
     use_art = False # Use art classifier
 
     # Create the model
-    if conf.model.name.lower() == "base_cnn":
-        model = BaseCNN(input_shape=INPUT_SHAPE)
+    if conf.model.name.lower() == "base_cnn_v1":
+        model = BaseCNN_v1()
         use_art = True
-    elif conf.model.name.lower() == "pretrained":
-        model = None
+    elif conf.model.name.lower() == "base_cnn_v2":
+        model = BaseCNN_v2()
         use_art = True
     elif conf.model.name.lower() == "mobilenet":
         model = models.mobilenet_v3_small(weights=models.mobilenet.MobileNet_V3_Small_Weights.DEFAULT)
@@ -102,7 +102,7 @@ def train(conf: DictConfig) -> None:
     # Save the model with help from utils.py
     utils.save_model(
         model=classifier,
-        target_dir=to_absolute_path(Path("models", conf.model.name)),
+        target_dir=to_absolute_path(Path("models", conf.model.name, conf.dataset.name)),
         model_name=conf.model.model_path,
         use_art=use_art,
         logger=log,

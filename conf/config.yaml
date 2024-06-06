@@ -8,8 +8,8 @@ hydra:
 # Default config for model and data
 defaults:
   - _self_
-  - model: base_cnn
-  - dataset: mnist
+  - model: base_cnn_v2
+  - dataset: cifar10
   - attack: fgsm
 
 project: 'aris'
