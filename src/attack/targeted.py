@@ -73,9 +73,7 @@ class TargetedAttacks:
                 verbose=True,
             )
         elif attack_name.upper() == "AUTOATTACK":
-            self.attack = AutoAttack(
-                estimator=classifier, batch_size=batch_size
-            )
+            self.attack = AutoAttack(estimator=classifier, batch_size=batch_size)
         else:
             raise NotImplementedError
 

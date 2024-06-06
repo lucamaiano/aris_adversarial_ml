@@ -1,0 +1,4 @@
+name: "CIFAR10"
+nb_classes: 10
+
+input_shape: [3, 32,32]

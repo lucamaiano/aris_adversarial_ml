@@ -1,0 +1,11 @@
+name: 'base_cnn_v2' # It works for RGB images only (not MNIST)
+
+# 'model'.pth filename
+model_path: "base_cnn_v2.pth"
+load_pretrained: True
+
+# Training configs
+num_epochs: 3
+batch_size: 32
+learning_rate: 0.01
+optimizer: "adam"

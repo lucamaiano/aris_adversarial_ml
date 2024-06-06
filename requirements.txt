@@ -2,6 +2,7 @@ adversarial-robustness-toolbox==1.17.1
 anaconda-anon-usage==0.4.4
 archspec==0.2.3
 astunparse==1.6.3
+black==24.4.2
 brotli==1.0.9
 conda-build==24.3.0
 conda-content-trust==0.2.0

@@ -1,0 +1,11 @@
+name: 'base_cnn_v1' # It works for grayscale images only (i.e. MNIST)
+
+# 'model'.pth filename
+model_path: "base_cnn_v1.pth"
+load_pretrained: False
+
+# Training configs
+num_epochs: 3
+batch_size: 32
+learning_rate: 0.01
+optimizer: "adam"
