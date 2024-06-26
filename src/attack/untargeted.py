@@ -10,7 +10,7 @@ class UntargetedAttacks:
     def __init__(self, attack_name: str, classifier, x, batch_size=32) -> None:
         if attack_name == "PIXELATTACK":
             self.attack = PixelAttack(
-                classifier=classifier, th=10, max_iter=20, verbose=True
+                classifier=classifier, th=10, max_iter=10, verbose=True
             )
         elif attack_name == "FGSM_UNTARGETED":
             self.attack = FastGradientMethod(

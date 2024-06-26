@@ -62,7 +62,6 @@ class TargetedAttacks:
                 classifier=classifier,
                 targeted=True,
                 batch_size=batch_size,
-                binary_search_steps=5,
                 verbose=True,
             )
         elif attack_name.upper() == "ZOO":

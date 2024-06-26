@@ -76,7 +76,7 @@ def train(conf: DictConfig) -> None:
             optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
         elif conf.model.optimizer.lower() == "sgd":
             optimizer = torch.optim.SGD(
-                model.parameters(), lr=LEARNING_RATE, momentum=0.9
+                model.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=5e-4
             )
 
         classifier = engine.train(

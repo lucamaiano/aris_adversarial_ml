@@ -130,7 +130,7 @@ def attack(
             attack_name=attack_name,
             classifier=classifier,
             x=x,
-            y_target=y_target,
+            y_target=y_target[::-1],
             batch_size=batch_size,
         )
     else:
